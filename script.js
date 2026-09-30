@@ -1,43 +1,74 @@
-const pokeApiUrl = 'https://pokeapi.co/api/v2/pokemon/';
-const pokeLocation = pokeApiUrl + 'location/';
+const pokeApiURL = 'https://pokeapi.co/api/v2/pokemon/';
 
-const pokeApiUrlGerman = 'https://pokeapi.co/api/v2/language/6/';
+let maxPokemonCount = '';
+let allPokemon = [];
+let currentPokemon = [];
 
-function init() {
-  getApiData();
+async function init() {
+  await loadAllPokemon();
+
+  await renderPokemon();
 }
 
-async function getApiData() {
-  let response = await fetch(pokeApiUrl);
-  let responseAsJson = await response.json();
-  renderPokeApiData(responseAsJson);
+async function fetchUrl(url) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error('Fehler beim Laden der Daten');
+  }
+
+  return await response.json();
 }
 
-async function renderPokeApiData(responseAsJson) {
+async function renderPokemon() {
+  const pokemon = await fetchUrl(pokeApiURL);
+  console.log(pokemon);
+
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   let cardsHTML = '';
-  for (let pokeIndex = 0; pokeIndex < responseAsJson.results.length; pokeIndex++) {
-    const pokeURL = responseAsJson.results[pokeIndex].url;
-    const response = await fetch(pokeURL);
-    const pokeJson = await response.json();
-    const typesHTML = await renderTypes(pokeJson);
 
-    cardsHTML += pokemonCardsTemplate(pokeJson, pokeIndex, typesHTML);
+  for (let pokeIndex = 0; pokeIndex < pokemon.results.length; pokeIndex++) {
+    const pokemonURL = pokemon.results[pokeIndex].url;
+    const pokemonJson = await fetchUrl(pokemonURL);
+
+    const pokemonTypesHTML = await renderTypes(pokemonJson);
+
+    cardsHTML += pokemonCardsTemplate(pokemonJson, pokeIndex, pokemonTypesHTML);
   }
   pokemonCardsRef.innerHTML = cardsHTML;
 }
 
 async function renderTypes(pokeJson) {
-  let typesHTML = '';
+  let pokemonTypesHTML = '';
   for (let typeIndex = 0; typeIndex < pokeJson.types.length; typeIndex++) {
     const typeURL = pokeJson.types[typeIndex].type.url;
-    const response = await fetch(typeURL);
-    const typeJson = await response.json();
+    const pokemonTypeJson = await fetchUrl(typeURL);
 
-    typesHTML += typeTemplate(typeJson);
+    pokemonTypesHTML += typeTemplate(pokemonTypeJson);
   }
-  return typesHTML;
+  return pokemonTypesHTML;
 }
 
-// async function renderPokemonCards() {
-// }
+async function loadAllPokemon() {
+  const loadBaseUrl = await fetchUrl(pokeApiURL);
+  maxPokemonCount = loadBaseUrl.count;
+
+  const allPokemonData = await fetchUrl(pokeApiURL + '?limit=' + maxPokemonCount);
+  allPokemon = allPokemonData.results;
+}
+
+// image
+
+function getPokemonImage(pokemon) {
+  const speciesId = pokemon.species.url.split('/').filter(Boolean).pop();
+
+  const basePokemonImage = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesId}.png`;
+
+  return (
+    pokemon.sprites.other.showdown.front_default ||
+    pokemon.sprites.other.home.front_default ||
+    pokemon.sprites.other['official-artwork'].front_default ||
+    pokemon.sprites.front_default ||
+    basePokemonImage
+  );
+}

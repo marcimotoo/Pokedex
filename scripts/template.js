@@ -1,17 +1,19 @@
-function pokemonCardsTemplate(pokeJson, pokeIndex, typesHTML) {
+function pokemonCardsTemplate(pokemonJson, pokeIndex, pokemonTypesHTML) {
+  const imageUrl = getPokemonImage(pokemonJson);
   return /*html*/ `
         <article class="pokemon-card">
-          <h2>${pokeJson.name}</h2>
-          <img src="${pokeJson.sprites.versions['generation-vii']['lets-go-pikachu-lets-go-eevee'].front_default}" alt="${pokeJson.name}" />
+          <h2>${pokemonJson.name}</h2>
+          <img class="pokemon-image" src="${imageUrl}" alt="${pokemonJson.name}" />
           <div class="types">
-          ${typesHTML}
+          ${pokemonTypesHTML}
           </div>
         </article>
     `;
 }
 
-function typeTemplate(typeJson) {
+function typeTemplate(pokemonTypeJson) {
+  const typeLink = pokemonTypeJson.sprites['generation-viii']['sword-shield'].name_icon;
   return /*html*/ `
-      <img src="${typeJson.sprites['generation-viii']['sword-shield'].name_icon}" alt="">
+      <img src="${typeLink}" alt="">
   `;
 }
