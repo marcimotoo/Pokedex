@@ -6,7 +6,7 @@ let currentPokemon = [];
 
 async function init() {
   await loadAllPokemon();
-
+  await loadCurrentPokemon();
   await renderPokemon();
 }
 
@@ -21,32 +21,34 @@ async function fetchUrl(url) {
 }
 
 async function renderPokemon() {
-  const pokemon = await fetchUrl(pokeApiURL);
-  console.log(pokemon);
-
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   let cardsHTML = '';
 
-  for (let pokeIndex = 0; pokeIndex < pokemon.results.length; pokeIndex++) {
-    const pokemonURL = pokemon.results[pokeIndex].url;
-    const pokemonJson = await fetchUrl(pokemonURL);
+  for (let pokemonId = 0; pokemonId < currentPokemon.length; pokemonId++) {
+    const pokemonAsJson = await fetchUrl(currentPokemon[pokemonId].url);
+    const pokemonTypesHTML = await renderTypes(pokemonAsJson);
+    const mainPokemonType = pokemonAsJson.types[0].type.name;
 
-    const pokemonTypesHTML = await renderTypes(pokemonJson);
-
-    cardsHTML += pokemonCardsTemplate(pokemonJson, pokeIndex, pokemonTypesHTML);
+    cardsHTML += pokemonCardsTemplate(pokemonAsJson, pokemonTypesHTML, mainPokemonType);
   }
+
   pokemonCardsRef.innerHTML = cardsHTML;
 }
 
 async function renderTypes(pokeJson) {
   let pokemonTypesHTML = '';
-  for (let typeIndex = 0; typeIndex < pokeJson.types.length; typeIndex++) {
-    const typeURL = pokeJson.types[typeIndex].type.url;
-    const pokemonTypeJson = await fetchUrl(typeURL);
 
-    pokemonTypesHTML += typeTemplate(pokemonTypeJson);
+  for (let pokemonTypeId = 0; pokemonTypeId < pokeJson.types.length; pokemonTypeId++) {
+    const pokemonTypeAsJson = await fetchUrl(pokeJson.types[pokemonTypeId].type.url);
+    pokemonTypesHTML += typeTemplate(pokemonTypeAsJson);
   }
+
   return pokemonTypesHTML;
+}
+
+async function loadCurrentPokemon() {
+  const loadBaseUrl = await fetchUrl(pokeApiURL);
+  currentPokemon = loadBaseUrl.results;
 }
 
 async function loadAllPokemon() {
