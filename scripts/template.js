@@ -5,7 +5,7 @@ function pokemonCardsTemplate(pokemonAsJson, pokemonTypesHTML, mainPokemonType) 
         <article class="pokemon-card ${mainPokemonType}">
           <div class="pokemon-card-header">
             <h2>${pokemonAsJson.name}</h2>
-            <p># ${pokemonAsJson.id}</p>
+            <p>#${pokemonAsJson.id}</p>
           </div>
           <img class="pokemon-image" src="${imageUrl}" alt="${pokemonAsJson.name}" />
           <div class="types">

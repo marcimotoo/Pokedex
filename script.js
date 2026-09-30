@@ -3,6 +3,8 @@ const pokeApiURL = 'https://pokeapi.co/api/v2/pokemon/';
 let maxPokemonCount = '';
 let allPokemon = [];
 let currentPokemon = [];
+let pokemonOffset = 0;
+let pokemonLimit = 50;
 
 async function init() {
   await loadAllPokemon();
@@ -47,7 +49,7 @@ async function renderTypes(pokeJson) {
 }
 
 async function loadCurrentPokemon() {
-  const loadBaseUrl = await fetchUrl(pokeApiURL);
+  const loadBaseUrl = await fetchUrl(pokeApiURL + `?offset=${pokemonOffset}&limit=${pokemonLimit}`);
   currentPokemon = loadBaseUrl.results;
 }
 
