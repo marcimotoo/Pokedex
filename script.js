@@ -1,14 +1,9 @@
 const pokeApiURL = 'https://pokeapi.co/api/v2/';
-const pokemon = 'pokemon/';
-const pokemonSpecies = 'pokemon-species/';
-const pokemonType = 'type/';
-const pokemonAbility = 'ability/battle-armor/';
 
-let pokemonMaxCount = '';
 let allPokemon = [];
 let currentPokemon = [];
-let pokemonOffset = 0;
-let pokemonLimit = 30;
+let pokemonMaxCount = 0;
+let pokemonLimit = 20;
 
 async function init() {
   showLoadingScreen();
@@ -52,14 +47,13 @@ async function renderTypes(pokeJson) {
 }
 
 async function loadPokemonData() {
-  const loadCurrentUrl = await fetchUrl(pokeApiURL + pokemon + `?offset=${pokemonOffset}&limit=${pokemonLimit}`);
-  currentPokemon = loadCurrentUrl.results;
-
-  const maxCount = await fetchUrl(pokeApiURL + pokemonSpecies);
+  const maxCount = await fetchUrl(pokeApiURL + 'pokemon-species');
   pokemonMaxCount = maxCount.count;
 
-  const pokemonCountData = await fetchUrl(pokeApiURL + pokemon + '?limit=' + pokemonMaxCount);
+  const pokemonCountData = await fetchUrl(pokeApiURL + 'pokemon' + '?limit=' + pokemonMaxCount);
   allPokemon = pokemonCountData.results;
+  currentPokemon = allPokemon.splice(0, pokemonLimit);
+  console.log(currentPokemon);
 }
 
 function filterAndShowPokemon() {
