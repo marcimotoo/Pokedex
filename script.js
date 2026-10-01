@@ -8,12 +8,13 @@ let pokemonMaxCount = '';
 let allPokemon = [];
 let currentPokemon = [];
 let pokemonOffset = 0;
-let pokemonLimit = 12;
+let pokemonLimit = 30;
 
 async function init() {
+  showLoadingScreen();
   await loadPokemonData();
-
   await renderPokemon();
+  hideLoadingScreen();
 }
 
 async function fetchUrl(url) {
@@ -28,11 +29,12 @@ async function renderPokemon() {
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   let cardsHTML = '';
 
-  for (let pokemonId = 0; pokemonId < currentPokemon.length; pokemonId++) {
-    const pokemonAsJson = await fetchUrl(currentPokemon[pokemonId].url);
+  for (let i = 0; i < currentPokemon.length; i++) {
+    const pokemonAsJson = await fetchUrl(currentPokemon[i].url);
     const pokemonTypesHTML = await renderTypes(pokemonAsJson);
 
     const mainPokemonType = pokemonAsJson.types[0].type.name;
+
     cardsHTML += pokemonCardsTemplate(pokemonAsJson, pokemonTypesHTML, mainPokemonType);
   }
   pokemonCardsRef.innerHTML = cardsHTML;
@@ -42,8 +44,8 @@ async function renderNames() {}
 
 async function renderTypes(pokeJson) {
   let pokemonTypesHTML = '';
-  for (let pokemonTypeId = 0; pokemonTypeId < pokeJson.types.length; pokemonTypeId++) {
-    const pokemonTypeAsJson = await fetchUrl(pokeJson.types[pokemonTypeId].type.url);
+  for (let i = 0; i < pokeJson.types.length; i++) {
+    const pokemonTypeAsJson = await fetchUrl(pokeJson.types[i].type.url);
     pokemonTypesHTML += typeTemplate(pokemonTypeAsJson);
   }
   return pokemonTypesHTML;
@@ -62,9 +64,16 @@ async function loadPokemonData() {
 
 function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-  currentPokemon = allPokemon.filter((pokemon) => pokemon.name.includes(filterName));
+  currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => pokemon.name.includes(filterName));
 
   renderPokemon();
+}
+
+function showLoadingScreen() {
+  document.getElementById('loading-screen').classList.remove('d-none');
+}
+function hideLoadingScreen() {
+  document.getElementById('loading-screen').classList.add('d-none');
 }
 
 function getPokemonImage(pokemon) {
