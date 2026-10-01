@@ -7,9 +7,8 @@ const pokemonAbility = 'ability/battle-armor/';
 let pokemonMaxCount = '';
 let allPokemon = [];
 let currentPokemon = [];
-let filterPokemon = [];
 let pokemonOffset = 0;
-let pokemonLimit = 40;
+let pokemonLimit = 12;
 
 async function init() {
   await loadPokemonData();
@@ -54,25 +53,16 @@ async function loadPokemonData() {
   const loadCurrentUrl = await fetchUrl(pokeApiURL + pokemon + `?offset=${pokemonOffset}&limit=${pokemonLimit}`);
   currentPokemon = loadCurrentUrl.results;
 
-  console.log(currentPokemon);
-
   const maxCount = await fetchUrl(pokeApiURL + pokemonSpecies);
   pokemonMaxCount = maxCount.count;
 
-  console.log(pokemonMaxCount);
-
-  const pokemonCountData = await fetchUrl(pokeApiURL + pokemonSpecies + '?limit=' + pokemonMaxCount);
+  const pokemonCountData = await fetchUrl(pokeApiURL + pokemon + '?limit=' + pokemonMaxCount);
   allPokemon = pokemonCountData.results;
-
-  console.log(allPokemon);
-
-  filterPokemon = allPokemon;
 }
 
 function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
   currentPokemon = allPokemon.filter((pokemon) => pokemon.name.includes(filterName));
-  console.log(currentPokemon);
 
   renderPokemon();
 }
