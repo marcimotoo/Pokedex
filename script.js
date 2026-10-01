@@ -1,10 +1,10 @@
-const pokeApiMainURL = 'https://pokeapi.co/api/v2/';
-const pokemonSpeciesURL = pokeApiMainURL + 'pokemon-species/';
-const pokemonURL = pokeApiMainURL + 'pokemon/';
-const pokemonTypeURL = pokeApiMainURL + 'type/';
-const pokemonAbilityURL = pokeApiMainURL + 'ability/battle-armor/';
+const pokeApiURL = 'https://pokeapi.co/api/v2/';
+const pokemon = 'pokemon/';
+const pokemonSpecies = 'pokemon-species/';
+const pokemonType = 'type/';
+const pokemonAbility = 'ability/battle-armor/';
 
-let maxPokemonCount = '';
+let pokemonMaxCount = '';
 let allPokemon = [];
 let currentPokemon = [];
 let filterPokemon = [];
@@ -12,8 +12,8 @@ let pokemonOffset = 0;
 let pokemonLimit = 40;
 
 async function init() {
-  await loadAllPokemon();
-  await loadCurrentPokemon();
+  await loadPokemonData();
+
   await renderPokemon();
 }
 
@@ -50,24 +50,24 @@ async function renderTypes(pokeJson) {
   return pokemonTypesHTML;
 }
 
-async function loadCurrentPokemon() {
-  const loadBaseUrl = await fetchUrl(pokemonSpeciesURL + `?offset=${pokemonOffset}&limit=${pokemonLimit}`);
-  currentPokemon = loadBaseUrl.results;
-}
+async function loadPokemonData() {
+  const loadCurrentUrl = await fetchUrl(pokeApiURL + pokemon + `?offset=${pokemonOffset}&limit=${pokemonLimit}`);
+  currentPokemon = loadCurrentUrl.results;
 
-async function loadAllPokemon() {
-  const loadBaseUrl = await fetchUrl(pokemonSpeciesURL);
-  maxPokemonCount = loadBaseUrl.count;
+  console.log(currentPokemon);
 
-  const allPokemonData = await fetchUrl(pokemonSpeciesURL + '?limit=' + maxPokemonCount);
-  allPokemon = allPokemonData.results;
+  const maxCount = await fetchUrl(pokeApiURL + pokemonSpecies);
+  pokemonMaxCount = maxCount.count;
+
+  console.log(pokemonMaxCount);
+
+  const pokemonCountData = await fetchUrl(pokeApiURL + pokemonSpecies + '?limit=' + pokemonMaxCount);
+  allPokemon = pokemonCountData.results;
+
+  console.log(allPokemon);
+
   filterPokemon = allPokemon;
 }
-
-// function inputFilterName() {
-//   const filterName = document.getElementById('filter_input').value.trim().toLowerCase();
-//   filterAndShowPokemon(filterName);
-// }
 
 function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
@@ -76,8 +76,6 @@ function filterAndShowPokemon() {
 
   renderPokemon();
 }
-
-// image
 
 function getPokemonImage(pokemon) {
   const speciesId = pokemon.species.url.split('/').filter(Boolean).pop();
