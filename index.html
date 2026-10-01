@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokedex</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="./styles/fonts.css " />
-    <link rel="stylesheet" href="./styles/loading.css" />
-    <link rel="stylesheet" href="./styles/variables.css" />
     <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/fonts.css " />
+    <link rel="stylesheet" href="./styles/variables.css" />
+    <link rel="stylesheet" href="./styles/assets.css" />
+    <link rel="stylesheet" href="./styles/loading.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="./scripts/db.js"></script>
     <script src="./scripts/template.js"></script>
@@ -19,6 +20,7 @@
       <h1>Pokédex</h1>
     </header>
     <main>
+      <input onkeydown="filterAndShowPokemon()" id="filter_input" type="text" />
       <div id="loading-screen">
         <img src="./assets/gif/running-pikachu.gif" alt="running pikachu" />
         <p>Pokémon werden geladen..</p>

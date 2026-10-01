@@ -1,11 +1,9 @@
 function pokemonCardsTemplate(pokemonAsJson, pokemonTypesHTML, mainPokemonType) {
   const imageUrl = getPokemonImage(pokemonAsJson);
-  const typeColor = pokemonAsJson.t;
   return /*html*/ `
         <article class="pokemon-card ${mainPokemonType}">
           <div class="pokemon-card-header">
-            <h2>${pokemonAsJson.name}</h2>
-            <p>#${pokemonAsJson.id}</p>
+            <h2>${pokemonAsJson.name.charAt(0).toUpperCase() + pokemonAsJson.name.slice(1).replaceAll('-', ' ')}<span> #${pokemonAsJson.id}</span></h2>
           </div>
           <img class="pokemon-image" src="${imageUrl}" alt="${pokemonAsJson.name}" />
           <div class="types">
