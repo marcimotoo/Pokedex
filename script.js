@@ -1,9 +1,10 @@
 const pokeApiURL = 'https://pokeapi.co/api/v2/';
+const cache = new Map();
 
 let allPokemon = [];
 let currentPokemon = [];
 let pokemonMaxCount = 0;
-let pokemonLimit = 20;
+let pokemonLimit = 10;
 
 async function init() {
   showLoadingScreen();
@@ -13,59 +14,89 @@ async function init() {
 }
 
 async function fetchUrl(url) {
+  if (cache.has(url)) {
+    return cache.get(url);
+  }
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error('Fehler beim Laden der Daten');
   }
-  return await response.json();
+  const data = await response.json();
+  cache.set(url, data);
+  return data;
 }
 
 async function renderPokemon() {
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   let cardsHTML = '';
-
   for (let i = 0; i < currentPokemon.length; i++) {
     const pokemonAsJson = await fetchUrl(currentPokemon[i].url);
-    const pokemonTypesHTML = await renderTypes(pokemonAsJson);
+    const names = await getNames(pokemonAsJson);
+    currentPokemon[i].germanName = names.name.toLowerCase();
+    console.log(currentPokemon);
 
-    const mainPokemonType = pokemonAsJson.types[0].type.name;
-
-    cardsHTML += pokemonCardsTemplate(pokemonAsJson, pokemonTypesHTML, mainPokemonType);
+    const types = await getTypesHTML(pokemonAsJson);
+    const mainType = pokemonAsJson.types[0].type.name;
+    cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType);
   }
   pokemonCardsRef.innerHTML = cardsHTML;
 }
 
-async function renderNames() {}
+async function getNames(JSON) {
+  const speciesUrl = JSON.species.url;
+  const speciesJson = await fetchUrl(speciesUrl);
+  const germanName = speciesJson.names.find((name) => name.language.name === 'de');
+  return germanName;
+}
 
-async function renderTypes(pokeJson) {
-  let pokemonTypesHTML = '';
-  for (let i = 0; i < pokeJson.types.length; i++) {
-    const pokemonTypeAsJson = await fetchUrl(pokeJson.types[i].type.url);
-    pokemonTypesHTML += typeTemplate(pokemonTypeAsJson);
+async function getTypesHTML(JSON) {
+  let TypesHTML = '';
+  for (let i = 0; i < JSON.types.length; i++) {
+    const typeUrl = JSON.types[i].type.url;
+    const typeJson = await fetchUrl(typeUrl);
+    const germanTyp = typeJson.names.find((typeName) => typeName.language.name === 'de');
+    TypesHTML += typeTemplate(germanTyp.name);
   }
-  return pokemonTypesHTML;
+  return TypesHTML;
 }
 
 async function loadPokemonData() {
-  const maxCount = await fetchUrl(pokeApiURL + 'pokemon-species');
+  const maxCount = await fetchUrl(pokeApiURL + 'pokemon-species?limit=1');
   pokemonMaxCount = maxCount.count;
 
-  const pokemonCountData = await fetchUrl(pokeApiURL + 'pokemon' + '?limit=' + pokemonMaxCount);
+  const pokemonCountData = await fetchUrl(pokeApiURL + 'pokemon/?limit=' + pokemonMaxCount);
   allPokemon = pokemonCountData.results;
-  currentPokemon = allPokemon.splice(0, pokemonLimit);
-  console.log(currentPokemon);
+
+  currentPokemon = allPokemon.slice(0, pokemonLimit);
 }
 
 function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-  currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => pokemon.name.includes(filterName));
-
+  currentPokemon =
+    filterName === ''
+      ? allPokemon.slice(0, pokemonLimit)
+      : allPokemon.filter((pokemon) => pokemon.name.includes(filterName) || pokemon.germanName.includes(filterName));
   renderPokemon();
+}
+
+function loadMorePokemon() {
+  const button = document.getElementById('more_pokemon');
+  button.disabled = true;
+  try {
+    pokemonLimit = pokemonLimit + 10;
+    currentPokemon = allPokemon.slice(0, pokemonLimit);
+    renderPokemon();
+  } catch (error) {
+    console.error('Pokémon konnten nicht geladen werden: ', error);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function showLoadingScreen() {
   document.getElementById('loading-screen').classList.remove('d-none');
 }
+
 function hideLoadingScreen() {
   document.getElementById('loading-screen').classList.add('d-none');
 }
