@@ -1,4 +1,7 @@
-const pokeApiURL = 'https://pokeapi.co/api/v2/';
+const pokemonApiURL = 'https://pokeapi.co/api/v2/pokemon/';
+const pokemonApiTypeUrl = 'https://pokeapi.co/api/v2/type/';
+const pokemonSpeciesApiUrl = 'https://pokeapi.co/api/v2/pokemon-species/';
+
 const cache = new Map();
 
 let allPokemon = [];
@@ -10,10 +13,13 @@ async function init() {
   setLoadingScreen(true);
   await loadPokemonList();
   await loadGermanNames(0, pokemonLimit);
+
+  // await loadGermanTypes(0, pokemonLimit);
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
   setLoadingScreen(false);
 
+  // loadGermanTypes(pokemonLimit, allPokemon.length);
   loadGermanNames(pokemonLimit, allPokemon.length);
 }
 
@@ -40,6 +46,7 @@ async function renderPokemon() {
     const names = currentPokemon[i].germanName;
 
     const types = await getTypesHTML(pokemonAsJson);
+
     const mainType = pokemonAsJson.types[0].type.name;
     cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType);
   }
@@ -47,19 +54,34 @@ async function renderPokemon() {
   setLoadingScreen(false);
 }
 
+async function getOverlay(id) {
+  const dialogRef = document.getElementById('overlay_dialog');
+
+  const name = currentPokemon[id].germanName;
+
+  dialogRef.innerHTML = overlayTemplate(id, name, types);
+}
+
 async function loadPokemonList() {
-  const countData = await fetchUrl(pokeApiURL + 'pokemon-species?limit=1');
+  const countData = await fetchUrl(pokemonSpeciesApiUrl + '?limit=1');
   speciesCount = countData.count;
 
-  const pokemonList = await fetchUrl(pokeApiURL + 'pokemon/?limit=' + speciesCount);
+  const pokemonList = await fetchUrl(pokemonApiURL + '?limit=' + speciesCount);
   allPokemon = pokemonList.results;
 }
 
 async function loadGermanNames(start, end) {
   for (let i = start; i < end; i++) {
-    const pokemonData = await fetchUrl(allPokemon[i].url);
+    const pokemonData = await fetchUrl(pokemonApiURL + (i + 1));
+    console.log(pokemonData);
+
     const germanName = await getGermanNames(pokemonData);
     allPokemon[i].germanName = germanName.name.toLowerCase();
+
+    const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
+    if (filterName && allPokemon[i].germanName.includes(filterName)) {
+      await filterAndShowPokemon();
+    }
   }
 }
 
@@ -71,8 +93,29 @@ async function getGermanNames(JSON) {
   return getGermanName;
 }
 
+async function loadGermanTypes(start, end) {
+  for (let i = start; i < end; i++) {
+    const pokemonTypeUrl = await fetchUrl(allPokemon[i].url); // todo links in einer funktion einmal fetchen um api zugriffe zu verringern
+    console.log(pokemonTypeUrl);
+
+    const type = pokemonTypeUrl[i].type;
+    console.log(type);
+    // const typeFetch = await fetchUrl(pokemonTypeUrl[i].type);
+
+    const germanTyp = await getGermanNames(pokemonData);
+    allPokemon[i].germanTyp = germanTyp.name.toLowerCase();
+
+    // const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
+    // if (filterName && allPokemon[i].germanName.includes(filterName)) {
+    //   await filterAndShowPokemon();
+    // }
+  }
+  const germanTyp = typeJson.names.find((typeName) => typeName.language.name === 'de');
+}
+
 async function getTypesHTML(JSON) {
   let TypesHTML = '';
+  console.log(JSON);
   for (let i = 0; i < JSON.types.length; i++) {
     const typeUrl = JSON.types[i].type.url;
     const typeJson = await fetchUrl(typeUrl);
@@ -113,6 +156,17 @@ function setLoadingScreen(isVisible) {
 
 function formatName(name) {
   return name[0].toUpperCase() + name.slice(1).toLowerCase();
+}
+
+function toggleDialog(id) {
+  const dialogRef = document.getElementById('overlay_dialog');
+
+  if (!dialogRef.open) {
+    dialogRef.showModal();
+    getOverlay(id);
+  } else {
+    dialogRef.close();
+  }
 }
 
 function getPokemonImage(pokemon) {

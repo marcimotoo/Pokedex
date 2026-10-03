@@ -99,3 +99,30 @@ footer {
   height: auto;
   width: 100px;
 }
+
+.overlay_dialog {
+}
+
+.overlay_dialog[open] {
+  width: 800px;
+  height: 800px;
+  margin: auto;
+  background-color: transparent;
+  border-radius: 16px;
+  border: none;
+}
+
+.overlay_dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.overlay-card {
+  width: 100%;
+  height: 100%;
+}
+
+.overlay-image {
+  width: 300px;
+  height: 300px;
+}
