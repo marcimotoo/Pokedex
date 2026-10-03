@@ -3,9 +3,9 @@ function pokemonCardsTemplate(JSON, names, types, mainType) {
   return /*html*/ `
         <article class="pokemon-card ${mainType}">
           <div class="pokemon-card-header">
-            <h2>${names.name}<span> #${JSON.id}</span></h2>
+            <h2>${formatName(names)}<span> #${JSON.id}</span></h2>
             </div>
-            <img class="pokemon-image" src="${imageUrl}" alt="${names.name}" />
+            <img class="pokemon-image" src="${imageUrl}" alt="${names}" />
             <div class="types">
               ${types}
             </div>
