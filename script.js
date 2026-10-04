@@ -1,26 +1,15 @@
-const pokemonApiURL = 'https://pokeapi.co/api/v2/pokemon/';
-const pokemonApiTypeUrl = 'https://pokeapi.co/api/v2/type/';
-const pokemonSpeciesApiUrl = 'https://pokeapi.co/api/v2/pokemon-species/';
-
-const cache = new Map();
-
-let allPokemon = [];
-let currentPokemon = [];
 let speciesCount = 0;
 let pokemonLimit = 10;
 
 async function init() {
   setLoadingScreen(true);
   await loadPokemonList();
-  await loadGermanNames(0, pokemonLimit);
 
+  await loadAllData(0, pokemonLimit);
   // await loadGermanTypes(0, pokemonLimit);
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
   setLoadingScreen(false);
-
-  // loadGermanTypes(pokemonLimit, allPokemon.length);
-  loadGermanNames(pokemonLimit, allPokemon.length);
 }
 
 async function fetchUrl(url) {
@@ -36,6 +25,54 @@ async function fetchUrl(url) {
   return data;
 }
 
+async function loadPokemonList() {
+  const countData = await fetchUrl(pokemonSpeciesApiUrl + '?limit=1');
+  speciesCount = countData.count;
+
+  const pokemonList = await fetchUrl(pokemonApiURL + '?limit=' + speciesCount);
+  allPokemon = pokemonList.results;
+}
+
+async function loadAllData(start, end) {
+  for (let i = start; i < end; i++) {
+    await loadTypeData(i);
+    await loadNameData(i);
+  }
+}
+
+async function loadNameData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  const speciesData = await fetchUrl(pokemonData.species.url);
+
+  const germanName = speciesData.names.find((entry) => entry.language.name === 'de');
+
+  allPokemon[id].germanName = (germanName?.name ?? pokemonData.name).toLowerCase();
+}
+
+async function loadTypeData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  allPokemon[id].types = [];
+
+  for (const entry of pokemonData.types) {
+    const typeData = await fetchUrl(entry.type.url);
+    const germanName = typeData.names.find((entry) => entry.language.name === 'de');
+
+    allPokemon[id].types.push({ name: entry.type.name, germanName: germanName?.name ?? entry.type.name });
+  }
+}
+
+async function getTypesHTML(JSON) {
+  let TypesHTML = '';
+  for (const type of JSON.types) {
+    TypesHTML += typeTemplate(type.germanName);
+  }
+  return TypesHTML;
+}
+
+async function loadPokemonSpeciesUrlData(id) {
+  const pokemonSpeciesData = await fetchUrl(pokemonSpeciesApiUrl + (id + 1));
+}
+
 async function renderPokemon() {
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   setLoadingScreen(true);
@@ -44,10 +81,9 @@ async function renderPokemon() {
   for (let i = 0; i < currentPokemon.length; i++) {
     const pokemonAsJson = await fetchUrl(currentPokemon[i].url);
     const names = currentPokemon[i].germanName;
-
-    const types = await getTypesHTML(pokemonAsJson);
-
+    const types = await getTypesHTML(currentPokemon[i]);
     const mainType = pokemonAsJson.types[0].type.name;
+
     cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType);
   }
   pokemonCardsRef.innerHTML = cardsHTML;
@@ -57,72 +93,11 @@ async function renderPokemon() {
 async function getOverlay(id) {
   const dialogRef = document.getElementById('overlay_dialog');
 
-  const name = currentPokemon[id].germanName;
+  const name = allPokemon[id].germanName;
+  const types = await getTypesHTML(allPokemon[id]);
+  const mainType = allPokemon[id].types[0].name;
 
-  dialogRef.innerHTML = overlayTemplate(id, name, types);
-}
-
-async function loadPokemonList() {
-  const countData = await fetchUrl(pokemonSpeciesApiUrl + '?limit=1');
-  speciesCount = countData.count;
-
-  const pokemonList = await fetchUrl(pokemonApiURL + '?limit=' + speciesCount);
-  allPokemon = pokemonList.results;
-}
-
-async function loadGermanNames(start, end) {
-  for (let i = start; i < end; i++) {
-    const pokemonData = await fetchUrl(pokemonApiURL + (i + 1));
-    console.log(pokemonData);
-
-    const germanName = await getGermanNames(pokemonData);
-    allPokemon[i].germanName = germanName.name.toLowerCase();
-
-    const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-    if (filterName && allPokemon[i].germanName.includes(filterName)) {
-      await filterAndShowPokemon();
-    }
-  }
-}
-
-async function getGermanNames(JSON) {
-  const speciesUrl = JSON.species.url;
-  const speciesJson = await fetchUrl(speciesUrl);
-  const getGermanName = speciesJson.names.find((name) => name.language.name === 'de');
-
-  return getGermanName;
-}
-
-async function loadGermanTypes(start, end) {
-  for (let i = start; i < end; i++) {
-    const pokemonTypeUrl = await fetchUrl(allPokemon[i].url); // todo links in einer funktion einmal fetchen um api zugriffe zu verringern
-    console.log(pokemonTypeUrl);
-
-    const type = pokemonTypeUrl[i].type;
-    console.log(type);
-    // const typeFetch = await fetchUrl(pokemonTypeUrl[i].type);
-
-    const germanTyp = await getGermanNames(pokemonData);
-    allPokemon[i].germanTyp = germanTyp.name.toLowerCase();
-
-    // const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-    // if (filterName && allPokemon[i].germanName.includes(filterName)) {
-    //   await filterAndShowPokemon();
-    // }
-  }
-  const germanTyp = typeJson.names.find((typeName) => typeName.language.name === 'de');
-}
-
-async function getTypesHTML(JSON) {
-  let TypesHTML = '';
-  console.log(JSON);
-  for (let i = 0; i < JSON.types.length; i++) {
-    const typeUrl = JSON.types[i].type.url;
-    const typeJson = await fetchUrl(typeUrl);
-    const germanTyp = typeJson.names.find((typeName) => typeName.language.name === 'de');
-    TypesHTML += typeTemplate(germanTyp.name);
-  }
-  return TypesHTML;
+  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType);
 }
 
 async function filterAndShowPokemon() {
@@ -140,7 +115,7 @@ async function loadMorePokemon() {
   try {
     const oldLimit = pokemonLimit;
     pokemonLimit += 10;
-    await loadGermanNames(oldLimit, pokemonLimit);
+    await loadAllData(oldLimit, pokemonLimit);
     currentPokemon = allPokemon.slice(0, pokemonLimit);
     await renderPokemon();
   } catch (error) {

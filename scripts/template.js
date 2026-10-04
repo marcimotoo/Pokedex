@@ -20,13 +20,13 @@ function typeTemplate(types) {
   `;
 }
 
-function overlayTemplate(id, name, types) {
+function overlayTemplate(id, name, types, mainType) {
   return /*html*/ `
-    <article class="overlay-card grass">
+    <article class="overlay-card ${mainType}">
           <button onclick="toggleDialog()">dialog schließen</button>
           <div class="pokemon-card-header">
             <h2>${formatName(name)}<span> #${id + 1}</span></h2>
-            <div class="types">Feuer</div>
+            <div class="types">${types}</div>
           </div>
           <img class="overlay-image" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/6.gif" alt="name" />
           <div>
