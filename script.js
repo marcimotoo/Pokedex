@@ -97,6 +97,38 @@ async function loadEvolutionStage(id, entry) {
   }
 }
 
+async function loadAboutData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  const speciesData = await fetchUrl(pokemonData.species.url);
+  const description = speciesData.flavor_text_entries.find((entry) => entry.language.name === 'de');
+  allPokemon[id].about = {
+    height: pokemonData.height / 10,
+    weight: pokemonData.weight / 10,
+    genderRate: speciesData.gender_rate,
+    description: description?.flavor_text.replace(/\s+/g, ' ') ?? 'Keine deutsche Beschreibung verfügbar.',
+  };
+}
+
+async function loadMovesData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  allPokemon[id].moves = [];
+  for (const entry of pokemonData.moves) {
+    const moveData = await fetchUrl(entry.move.url);
+    const germanName = moveData.names.find((entry) => entry.language.name === 'de');
+    allPokemon[id].moves.push({ name: entry.move.name, germanName: germanName?.name ?? entry.move.name });
+  }
+}
+
+async function loadEvolutionImages(id) {
+  for (const evolution of allPokemon[id].evolution) {
+    if (evolution.imageUrl) continue;
+    const speciesData = await fetchUrl(pokemonSpeciesApiUrl + evolution.id + '/');
+    const variety = speciesData.varieties.find((entry) => entry.is_default);
+    const pokemonData = await fetchUrl(variety.pokemon.url);
+    evolution.imageUrl = getPokemonImage(pokemonData);
+  }
+}
+
 async function getTypesHTML(JSON) {
   let TypesHTML = '';
   for (const type of JSON.types) {
@@ -121,18 +153,6 @@ async function renderPokemon() {
   }
   pokemonCardsRef.innerHTML = cardsHTML;
   setLoadingScreen(false);
-}
-
-async function getOverlay(id) {
-  const dialogRef = document.getElementById('overlay_dialog');
-
-  const name = allPokemon[id].germanName;
-  const types = await getTypesHTML(allPokemon[id]);
-  const mainType = allPokemon[id].types[0].name;
-  const pokemonData = await fetchUrl(allPokemon[id].url);
-  const imageUrl = getPokemonImage(pokemonData);
-
-  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType, imageUrl);
 }
 
 async function filterAndShowPokemon() {
@@ -187,23 +207,71 @@ function getPokemonImage(pokemon) {
   );
 }
 
+async function getOverlay(id) {
+  const dialogRef = document.getElementById('overlay_dialog');
+
+  const name = allPokemon[id].germanName;
+  const types = await getTypesHTML(allPokemon[id]);
+  const mainType = allPokemon[id].types[0].name;
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  const imageUrl = getPokemonImage(pokemonData);
+
+  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType, imageUrl);
+  await showOverlayAbout(id);
+}
+
 function showOverlayStats(id) {
-  const contentRef = document.getElementById('overlay_content');
+  const contentRef = getOverlayContent('stats');
   let statsHTML = '';
   for (const stat of allPokemon[id].stats) {
-    statsHTML += `<p>${stat.germanName}: ${stat.value}</p>`;
+    statsHTML += statsTemplate(stat);
   }
   contentRef.innerHTML = statsHTML;
 }
 
-function showOverlayEvolutions(id) {
-  const contentRef = document.getElementById('overlay_content');
+async function showOverlayEvolutions(id) {
+  const contentRef = getOverlayContent('evolutions');
+  contentRef.textContent = 'Entwicklungen werden geladen…';
+  await loadEvolutionImages(id);
+  if (!contentRef.isConnected || contentRef.dataset.tab !== 'evolutions') return;
   const evolutions = allPokemon[id].evolution;
   let evolutionHTML = '';
   for (const evolution of evolutions) {
     const previous = evolutions.find((entry) => entry.name === evolution.evolvesFrom);
     const previousName = previous ? `${previous.germanName} → ` : '';
-    evolutionHTML += `<p>${previousName}${evolution.germanName}</p>`;
+    evolutionHTML += evolutionTemplate(previousName, evolution);
   }
   contentRef.innerHTML = evolutionHTML;
+}
+
+function getOverlayContent(tab) {
+  const contentRef = document.getElementById('overlay_content');
+  contentRef.dataset.tab = tab;
+  return contentRef;
+}
+
+function getGenderText(rate) {
+  if (rate === -1) return 'Geschlechtslos';
+  const female = rate / 8 * 100;
+  return `${female} % weiblich, ${100 - female} % männlich`;
+}
+
+async function showOverlayAbout(id) {
+  const contentRef = getOverlayContent('about');
+  contentRef.textContent = 'Informationen werden geladen…';
+  await loadAboutData(id);
+  if (!contentRef.isConnected || contentRef.dataset.tab !== 'about') return;
+  contentRef.innerHTML = aboutTemplate(allPokemon[id].about);
+}
+
+async function showOverlayMoves(id) {
+  const contentRef = getOverlayContent('moves');
+  contentRef.textContent = 'Attacken werden geladen…';
+  await loadMovesData(id);
+  if (!contentRef.isConnected || contentRef.dataset.tab !== 'moves') return;
+  let movesHTML = '';
+  for (const move of allPokemon[id].moves) {
+    movesHTML += moveTemplate(move);
+  }
+  contentRef.innerHTML = movesHTML;
 }

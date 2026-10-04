@@ -135,3 +135,31 @@ footer {
   object-fit: contain;
   image-rendering: auto;
 }
+
+.overlay-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+
+#overlay_content {
+  padding: 12px;
+}
+
+#overlay_content p {
+  margin-bottom: 8px;
+}
+
+.evolution-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.evolution-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
