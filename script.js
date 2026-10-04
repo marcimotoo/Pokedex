@@ -6,10 +6,11 @@ async function init() {
   await loadPokemonList();
 
   await loadAllData(0, pokemonLimit);
-  // await loadGermanTypes(0, pokemonLimit);
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
   setLoadingScreen(false);
+
+  loadAllData(pokemonLimit, allPokemon.length);
 }
 
 async function fetchUrl(url) {
