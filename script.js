@@ -1,5 +1,5 @@
 let speciesCount = 0;
-let pokemonLimit = 10;
+let pokemonLimit = 125;
 
 async function init() {
   setLoadingScreen(true);
@@ -37,6 +37,8 @@ async function loadAllData(start, end) {
   for (let i = start; i < end; i++) {
     await loadTypeData(i);
     await loadNameData(i);
+    await loadStatsData(i);
+    await loadEvolutionData(i);
   }
 }
 
@@ -61,6 +63,40 @@ async function loadTypeData(id) {
   }
 }
 
+async function loadStatsData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  allPokemon[id].stats = [];
+  for (const entry of pokemonData.stats) {
+    const statData = await fetchUrl(entry.stat.url);
+    const germanName = statData.names.find((entry) => entry.language.name === 'de');
+    allPokemon[id].stats.push({ name: entry.stat.name, germanName: germanName?.name ?? entry.stat.name, value: entry.base_stat });
+  }
+}
+
+async function loadEvolutionData(id) {
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  const speciesData = await fetchUrl(pokemonData.species.url);
+  allPokemon[id].evolution = [];
+  if (!speciesData.evolution_chain) return;
+  const evolutionData = await fetchUrl(speciesData.evolution_chain.url);
+  await loadEvolutionStage(id, evolutionData.chain);
+}
+
+async function loadEvolutionStage(id, entry) {
+  const speciesData = await fetchUrl(entry.species.url);
+  const germanName = speciesData.names.find((name) => name.language.name === 'de');
+  allPokemon[id].evolution.push({
+    id: speciesData.id,
+    name: entry.species.name,
+    germanName: germanName?.name ?? entry.species.name,
+    evolvesFrom: speciesData.evolves_from_species?.name ?? null,
+    details: entry.evolution_details,
+  });
+  for (const nextEvolution of entry.evolves_to) {
+    await loadEvolutionStage(id, nextEvolution);
+  }
+}
+
 async function getTypesHTML(JSON) {
   let TypesHTML = '';
   for (const type of JSON.types) {
@@ -79,8 +115,9 @@ async function renderPokemon() {
     const names = currentPokemon[i].germanName;
     const types = await getTypesHTML(currentPokemon[i]);
     const mainType = currentPokemon[i].types[0].name;
+    const imageUrl = getPokemonImage(pokemonAsJson);
 
-    cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType);
+    cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType, imageUrl);
   }
   pokemonCardsRef.innerHTML = cardsHTML;
   setLoadingScreen(false);
@@ -91,9 +128,7 @@ async function getOverlay(id) {
 
   const name = allPokemon[id].germanName;
   const types = await getTypesHTML(allPokemon[id]);
-  const mainType = allPokemon[id].types[0].typ;
-  console.log(mainType);
-
+  const mainType = allPokemon[id].types[0].name;
   const pokemonData = await fetchUrl(allPokemon[id].url);
   const imageUrl = getPokemonImage(pokemonData);
 
@@ -135,7 +170,6 @@ function formatName(name) {
 
 function toggleDialog(id) {
   const dialogRef = document.getElementById('overlay_dialog');
-
   if (!dialogRef.open) {
     dialogRef.showModal();
     getOverlay(id);
@@ -145,13 +179,31 @@ function toggleDialog(id) {
 }
 
 function getPokemonImage(pokemon) {
-  const speciesId = pokemon.species.url.split('/').filter(Boolean).pop();
-  const basePokemonImage = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesId}.png`;
   return (
     pokemon.sprites.other.showdown.front_default ||
-    pokemon.sprites.other.home.front_default ||
-    pokemon.sprites.other['official-artwork'].front_default ||
-    pokemon.sprites.front_default ||
-    basePokemonImage
+    pokemon.sprites.versions['generation-vii']['lets-go-pikachu-lets-go-eevee'].front_default ||
+    pokemon.sprites.versions['generation-vii']['ultra-sun-ultra-moon'].front_default ||
+    pokemon.sprites.other['official-artwork'].front_default
   );
+}
+
+function showOverlayStats(id) {
+  const contentRef = document.getElementById('overlay_content');
+  let statsHTML = '';
+  for (const stat of allPokemon[id].stats) {
+    statsHTML += `<p>${stat.germanName}: ${stat.value}</p>`;
+  }
+  contentRef.innerHTML = statsHTML;
+}
+
+function showOverlayEvolutions(id) {
+  const contentRef = document.getElementById('overlay_content');
+  const evolutions = allPokemon[id].evolution;
+  let evolutionHTML = '';
+  for (const evolution of evolutions) {
+    const previous = evolutions.find((entry) => entry.name === evolution.evolvesFrom);
+    const previousName = previous ? `${previous.germanName} → ` : '';
+    evolutionHTML += `<p>${previousName}${evolution.germanName}</p>`;
+  }
+  contentRef.innerHTML = evolutionHTML;
 }

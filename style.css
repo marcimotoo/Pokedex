@@ -100,9 +100,6 @@ footer {
   width: 100px;
 }
 
-.overlay_dialog {
-}
-
 .overlay_dialog[open] {
   width: 800px;
   height: 800px;
@@ -118,11 +115,23 @@ footer {
 }
 
 .overlay-card {
-  width: 100%;
+  min-width: 200px;
+  max-width: 700px;
   height: 100%;
+  margin: auto;
+}
+
+.overlay-image-container {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .overlay-image {
-  width: 300px;
-  height: 300px;
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: auto;
 }

@@ -1,6 +1,4 @@
-function pokemonCardsTemplate(JSON, names, types, mainType) {
-  const imageUrl = getPokemonImage(JSON);
-
+function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
   return /*html*/ `
         <article onclick="toggleDialog(${JSON.id - 1})" class="pokemon-card ${mainType}">
           <div class="pokemon-card-header">
@@ -28,13 +26,16 @@ function overlayTemplate(id, name, types, mainType, imageUrl) {
             <h2>${formatName(name)}<span> #${id + 1}</span></h2>
             <div class="types">${types}</div>
           </div>
+          <div class="overlay-image-container">
           <img class="overlay-image" src="${imageUrl}" alt="${name}" />
+          </div>
           <div>
             <button>about</button>
-            <button>Basis Werte</button>
-            <button>Evolutionen</button>
+            <button onclick="showOverlayStats(${id})">Basis Werte</button>
+            <button onclick="showOverlayEvolutions(${id})">Evolutionen</button>
             <button>Moves</button>
           </div>
+          <div id="overlay_content"></div>
         </article>
   `;
 }
