@@ -3,13 +3,29 @@ body {
 }
 
 header {
-  background: black;
-  color: white;
-  height: 100px;
+  background: linear-gradient(120deg, #151b24, #293343);
+  color: #f5f6f8;
+  min-height: 100px;
   display: flex;
   align-items: center;
+  gap: 16px;
   z-index: 20;
-  padding: 0 max(calc(50% - 720px), 16px);
+  padding: 24px max(calc(50% - 720px), 20px);
+  border-bottom: 3px solid #f2cd3c;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
+}
+
+.header-pokeball {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+header h1 {
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 main {
@@ -59,13 +75,39 @@ main {
 }
 
 footer {
-  background: black;
-  color: white;
-  height: 100px;
+  background: linear-gradient(120deg, #151b24, #293343);
+  color: #d4dae3;
+  min-height: 100px;
   display: flex;
   align-items: center;
+  justify-content: center;
   z-index: 20;
-  padding: 0 max(calc(50% - 720px), 16px);
+  padding: 24px max(calc(50% - 720px), 20px);
+  border-top: 3px solid #f2cd3c;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+footer span {
+  margin: 0 8px;
+  color: #f2cd3c;
+}
+
+footer a {
+  color: #f2cd3c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+footer a:hover {
+  color: #fff2b3;
+}
+
+footer a:focus-visible {
+  outline: 2px solid #f2cd3c;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 #pokemon_card_content {
@@ -229,7 +271,7 @@ footer {
 }
 
 .overlay-image-container {
-  height: 500px;
+  height: 400px;
   padding: 16px;
   display: flex;
   align-items: center;

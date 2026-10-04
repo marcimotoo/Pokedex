@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokedex</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles/reset.css" />
     <link rel="stylesheet" href="./styles/fonts.css " />
     <link rel="stylesheet" href="./styles/variables.css" />
@@ -17,6 +17,13 @@
   </head>
   <body onload="init()">
     <header>
+      <svg class="header-pokeball" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="#f5f6f8" />
+        <path d="M3 24a21 21 0 0 1 42 0Z" fill="#e45b56" />
+        <circle cx="24" cy="24" r="21" fill="none" stroke="#151b24" stroke-width="3" />
+        <path d="M3 24h42" stroke="#151b24" stroke-width="4" />
+        <circle cx="24" cy="24" r="7" fill="#f5f6f8" stroke="#151b24" stroke-width="4" />
+      </svg>
       <h1>Pokédex</h1>
     </header>
     <main>
@@ -28,14 +35,23 @@
         <input oninput="filterAndShowPokemon()" id="filter_input" type="text" aria-label="Pokémon suchen" />
       </div>
       <div id="loading-screen">
-        <img src="./assets/gif/running-pikachu.gif" alt="running pikachu" />
-        <p>Pokémon werden geladen..</p>
+        <div class="loading-card" role="status" aria-live="polite">
+          <img src="./assets/gif/running-pikachu.gif" alt="Laufendes Pikachu" />
+          <p>Pokémon werden geladen …</p>
+          <div class="loading-dots" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
 
       <section id="pokemon_card_content"></section>
       <button id="more_pokemon" onclick="loadMorePokemon()">mehr Pokemon!</button>
       <dialog closedby="any" class="overlay_dialog" id="overlay_dialog"></dialog>
     </main>
-    <footer></footer>
+    <footer>
+      <p>Pokédex <span aria-hidden="true">·</span> Daten von <a href="https://pokeapi.co/">PokéAPI</a></p>
+    </footer>
   </body>
 </html>

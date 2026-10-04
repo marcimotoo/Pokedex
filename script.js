@@ -40,6 +40,7 @@ async function loadAllData(start, end) {
     await loadNameData(i);
     await loadStatsData(i);
     await loadEvolutionData(i);
+    allPokemon[i].dataLoaded = true; //
   }
 }
 
@@ -150,8 +151,9 @@ async function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
   currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => matchesPokemon(pokemon, filterName));
   for (const pokemon of currentPokemon) {
-    if (!pokemon.types) {
-      await loadOverlayPokemonData(allPokemon.indexOf(pokemon));
+    if (!pokemon.dataLoaded) {
+      const id = allPokemon.indexOf(pokemon);
+      await loadAllData(id, id + 1);
     }
   }
   await renderPokemon();
@@ -169,6 +171,9 @@ async function loadMorePokemon() {
   try {
     const oldLimit = pokemonLimit;
     pokemonLimit += 10;
+    if (pokemonLimit > allPokemon.length) {
+      pokemonLimit = allPokemon.length;
+    }
     await loadAllData(oldLimit, pokemonLimit);
     currentPokemon = allPokemon.slice(0, pokemonLimit);
     await renderPokemon();
@@ -249,7 +254,9 @@ async function openEvolution(speciesId) {
   const speciesData = await fetchUrl(pokemonSpeciesApiUrl + speciesId + '/');
   const variety = speciesData.varieties.find((entry) => entry.is_default);
   const id = getPokemonIndex(variety.pokemon);
-  await loadOverlayPokemonData(id);
+  if (!allPokemon[id].dataLoaded) {
+    await loadAllData(id, id + 1);
+  }
   if (!contentRef.isConnected || contentRef.dataset.tab !== 'evolution-details') return;
   await getOverlay(id);
 }
@@ -261,13 +268,6 @@ function getPokemonIndex(pokemon) {
     id = allPokemon.length - 1;
   }
   return id;
-}
-
-async function loadOverlayPokemonData(id) {
-  await loadTypeData(id);
-  await loadNameData(id);
-  await loadStatsData(id);
-  await loadEvolutionData(id);
 }
 
 function getOverlayContent(tab) {
