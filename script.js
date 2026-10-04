@@ -69,10 +69,6 @@ async function getTypesHTML(JSON) {
   return TypesHTML;
 }
 
-async function loadPokemonSpeciesUrlData(id) {
-  const pokemonSpeciesData = await fetchUrl(pokemonSpeciesApiUrl + (id + 1));
-}
-
 async function renderPokemon() {
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   setLoadingScreen(true);
@@ -82,7 +78,7 @@ async function renderPokemon() {
     const pokemonAsJson = await fetchUrl(currentPokemon[i].url);
     const names = currentPokemon[i].germanName;
     const types = await getTypesHTML(currentPokemon[i]);
-    const mainType = pokemonAsJson.types[0].type.name;
+    const mainType = currentPokemon[i].types[0].name;
 
     cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType);
   }
@@ -95,9 +91,13 @@ async function getOverlay(id) {
 
   const name = allPokemon[id].germanName;
   const types = await getTypesHTML(allPokemon[id]);
-  const mainType = allPokemon[id].types[0].name;
+  const mainType = allPokemon[id].types[0].typ;
+  console.log(mainType);
 
-  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType);
+  const pokemonData = await fetchUrl(allPokemon[id].url);
+  const imageUrl = getPokemonImage(pokemonData);
+
+  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType, imageUrl);
 }
 
 async function filterAndShowPokemon() {
