@@ -63,21 +63,26 @@ function evolutionTemplate(previousName, evolution) {
   return /*html*/ `
     <button type="button" class="evolution-item" onclick="openEvolution(${evolution.id})" aria-label="Details zu ${evolution.germanName} öffnen">
       <img src="${evolution.imageUrl}" alt="${evolution.germanName}" />
-      <span>${previousName}${evolution.germanName}</span>
+      <span>${previousName}<strong>${evolution.germanName}</strong></span>
     </button>
   `;
 }
 function statsTemplate(stat) {
   return /*html*/ `
-    <p>${stat.germanName}: ${stat.value}</p>
+    <p>
+      <strong>${stat.germanName}:</strong> ${stat.value}
+      <span class="stat-bar" aria-hidden="true">
+        <span class="stat-fill" style="width: ${(stat.value / 255) * 100}%"></span>
+      </span>
+    </p>
   `;
 }
 
 function aboutTemplate(about) {
   return /*html*/ `
-    <p>${about.description}</p>
-    <p>Größe: ${about.height} m</p>
-    <p>Gewicht: ${about.weight} kg</p>
-    <p>Geschlecht: ${getGenderText(about.genderRate)}</p>
+    <p><strong>Beschreibung</strong><br />${about.description}</p>
+    <p><strong>Größe:</strong> ${about.height} m</p>
+    <p><strong>Gewicht:</strong> ${about.weight} kg</p>
+    <p><strong>Geschlecht:</strong> ${getGenderText(about.genderRate)}</p>
   `;
 }
