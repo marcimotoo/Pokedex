@@ -1,71 +1,113 @@
 .normal {
-  background-color: var(--type-normal);
+  background: var(--type-normal);
 }
-
 .fire {
-  background-color: var(--type-fire);
+  background: var(--type-fire);
 }
-
 .water {
   background: var(--type-water);
 }
-
 .electric {
   background: var(--type-electric);
 }
-
 .grass {
   background: var(--type-grass);
 }
-
 .ice {
   background: var(--type-ice);
 }
-
 .fighting {
   background: var(--type-fighting);
 }
-
 .poison {
   background: var(--type-poison);
 }
-
 .ground {
   background: var(--type-ground);
 }
-
 .flying {
   background: var(--type-flying);
 }
-
 .psychic {
   background: var(--type-psychic);
 }
-
 .bug {
   background: var(--type-bug);
 }
-
 .rock {
   background: var(--type-rock);
 }
-
 .ghost {
   background: var(--type-ghost);
 }
-
 .dragon {
   background: var(--type-dragon);
 }
-
 .dark {
   background: var(--type-dark);
 }
-
 .steel {
   background: var(--type-steel);
 }
-
 .fairy {
   background: var(--type-fairy);
+}
+.normal-strong {
+  background: var(--type-normal-strong);
+}
+.fire-strong {
+  background: var(--type-fire-strong);
+}
+.water-strong {
+  background: var(--type-water-strong);
+}
+.electric-strong {
+  background: var(--type-electric-strong);
+}
+.grass-strong {
+  background: var(--type-grass-strong);
+}
+.ice-strong {
+  background: var(--type-ice-strong);
+}
+.fighting-strong {
+  background: var(--type-fighting-strong);
+}
+.poison-strong {
+  background: var(--type-poison-strong);
+}
+.ground-strong {
+  background: var(--type-ground-strong);
+}
+.flying-strong {
+  background: var(--type-flying-strong);
+}
+.psychic-strong {
+  background: var(--type-psychic-strong);
+}
+.bug-strong {
+  background: var(--type-bug-strong);
+}
+.rock-strong {
+  background: var(--type-rock-strong);
+}
+.ghost-strong {
+  background: var(--type-ghost-strong);
+}
+.dragon-strong {
+  background: var(--type-dragon-strong);
+}
+.dark-strong {
+  background: var(--type-dark-strong);
+}
+.steel-strong {
+  background: var(--type-steel-strong);
+}
+.fairy-strong {
+  background: var(--type-fairy-strong);
+}
+
+button:focus-visible {
+  outline: 3px solid rgb(0, 0, 0);
+  outline-offset: 0px;
 }

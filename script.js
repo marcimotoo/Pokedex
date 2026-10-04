@@ -122,7 +122,7 @@ async function loadEvolutionImages(id) {
 async function getTypesHTML(JSON) {
   let TypesHTML = '';
   for (const type of JSON.types) {
-    TypesHTML += typeTemplate(type.germanName);
+    TypesHTML += typeTemplate(type);
   }
   return TypesHTML;
 }

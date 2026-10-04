@@ -1,27 +1,29 @@
 function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
   return /*html*/ `
-        <article onclick="toggleDialog(${JSON.id - 1})" class="pokemon-card ${mainType}">
-          <div class="pokemon-card-header">
-            <h2>${formatName(names)}<span> #${JSON.id}</span></h2>
-            </div>
-            <img class="pokemon-image" src="${imageUrl}" alt="${names}" />
-            <div class="types">
-              ${types}
-            </div>
-          </article>
+  <button class="pokemon-card-button ${mainType}" onclick="toggleDialog(${JSON.id - 1})">
+    <article class="pokemon-card"> 
+      <div class="pokemon-card-header">
+        <h2>${formatName(names)}<span> #${JSON.id}</span></h2>
+      </div>
+      <img class="pokemon-image" src="${imageUrl}" alt="${names}" />
+      <div class="types">
+        ${types}
+      </div>
+    </article>
+  </button>
           `;
 }
 
 function typeTemplate(types) {
   return /*html*/ `
-    <p>${types}</p>
+    <p class="type-text ${types.name}-strong">${types.germanName}</p>
   `;
 }
 
 function overlayTemplate(id, name, types, mainType, imageUrl, pokemonId = id + 1) {
   return /*html*/ `
     <article class="overlay-card ${mainType}">
-      <button onclick="toggleDialog()">Dialog schließen</button>
+      <button class="overlay-close" aria-label="Dialog schließen" onclick="toggleDialog()">&times;</button>
       ${overlayHeaderTemplate(pokemonId, name, types)}
       ${overlayImageTemplate(name, imageUrl)}
       ${overlayButtonsTemplate(id)}
