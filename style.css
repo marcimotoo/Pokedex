@@ -156,6 +156,24 @@ footer {
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.evolution-item:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.evolution-item:focus-visible {
+  outline: 2px solid black;
+  outline-offset: 2px;
 }
 
 .evolution-item img {

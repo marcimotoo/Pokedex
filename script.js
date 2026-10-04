@@ -109,16 +109,6 @@ async function loadAboutData(id) {
   };
 }
 
-async function loadMovesData(id) {
-  const pokemonData = await fetchUrl(allPokemon[id].url);
-  allPokemon[id].moves = [];
-  for (const entry of pokemonData.moves) {
-    const moveData = await fetchUrl(entry.move.url);
-    const germanName = moveData.names.find((entry) => entry.language.name === 'de');
-    allPokemon[id].moves.push({ name: entry.move.name, germanName: germanName?.name ?? entry.move.name });
-  }
-}
-
 async function loadEvolutionImages(id) {
   for (const evolution of allPokemon[id].evolution) {
     if (evolution.imageUrl) continue;
@@ -157,11 +147,19 @@ async function renderPokemon() {
 
 async function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-  currentPokemon =
-    filterName === ''
-      ? allPokemon.slice(0, pokemonLimit)
-      : allPokemon.filter((pokemon) => pokemon.name.includes(filterName) || pokemon.germanName?.includes(filterName));
+  currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => matchesPokemon(pokemon, filterName));
+  for (const pokemon of currentPokemon) {
+    if (!pokemon.types) {
+      await loadOverlayPokemonData(allPokemon.indexOf(pokemon));
+    }
+  }
   await renderPokemon();
+}
+
+function matchesPokemon(pokemon, filterName) {
+  const pokemonNumber = Number(pokemon.url.split('/').filter(Boolean).pop());
+  const matchesType = pokemon.types?.some((type) => type.name.includes(filterName) || type.germanName.toLowerCase().includes(filterName));
+  return pokemonNumber === Number(filterName) || pokemon.name.includes(filterName) || pokemon.germanName?.includes(filterName) || matchesType;
 }
 
 async function loadMorePokemon() {
@@ -200,10 +198,10 @@ function toggleDialog(id) {
 
 function getPokemonImage(pokemon) {
   return (
+    pokemon.sprites.other['official-artwork'].front_default ||
     pokemon.sprites.other.showdown.front_default ||
     pokemon.sprites.versions['generation-vii']['lets-go-pikachu-lets-go-eevee'].front_default ||
-    pokemon.sprites.versions['generation-vii']['ultra-sun-ultra-moon'].front_default ||
-    pokemon.sprites.other['official-artwork'].front_default
+    pokemon.sprites.versions['generation-vii']['ultra-sun-ultra-moon'].front_default
   );
 }
 
@@ -216,7 +214,7 @@ async function getOverlay(id) {
   const pokemonData = await fetchUrl(allPokemon[id].url);
   const imageUrl = getPokemonImage(pokemonData);
 
-  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType, imageUrl);
+  dialogRef.innerHTML = overlayTemplate(id, name, types, mainType, imageUrl, pokemonData.id);
   await showOverlayAbout(id);
 }
 
@@ -244,6 +242,33 @@ async function showOverlayEvolutions(id) {
   contentRef.innerHTML = evolutionHTML;
 }
 
+async function openEvolution(speciesId) {
+  const contentRef = getOverlayContent('evolution-details');
+  contentRef.textContent = 'Pokémon wird geladen…';
+  const speciesData = await fetchUrl(pokemonSpeciesApiUrl + speciesId + '/');
+  const variety = speciesData.varieties.find((entry) => entry.is_default);
+  const id = getPokemonIndex(variety.pokemon);
+  await loadOverlayPokemonData(id);
+  if (!contentRef.isConnected || contentRef.dataset.tab !== 'evolution-details') return;
+  await getOverlay(id);
+}
+
+function getPokemonIndex(pokemon) {
+  let id = allPokemon.findIndex((entry) => entry.url === pokemon.url);
+  if (id === -1) {
+    allPokemon.push({ name: pokemon.name, url: pokemon.url });
+    id = allPokemon.length - 1;
+  }
+  return id;
+}
+
+async function loadOverlayPokemonData(id) {
+  await loadTypeData(id);
+  await loadNameData(id);
+  await loadStatsData(id);
+  await loadEvolutionData(id);
+}
+
 function getOverlayContent(tab) {
   const contentRef = document.getElementById('overlay_content');
   contentRef.dataset.tab = tab;
@@ -252,7 +277,7 @@ function getOverlayContent(tab) {
 
 function getGenderText(rate) {
   if (rate === -1) return 'Geschlechtslos';
-  const female = rate / 8 * 100;
+  const female = (rate / 8) * 100;
   return `${female} % weiblich, ${100 - female} % männlich`;
 }
 
@@ -262,16 +287,4 @@ async function showOverlayAbout(id) {
   await loadAboutData(id);
   if (!contentRef.isConnected || contentRef.dataset.tab !== 'about') return;
   contentRef.innerHTML = aboutTemplate(allPokemon[id].about);
-}
-
-async function showOverlayMoves(id) {
-  const contentRef = getOverlayContent('moves');
-  contentRef.textContent = 'Attacken werden geladen…';
-  await loadMovesData(id);
-  if (!contentRef.isConnected || contentRef.dataset.tab !== 'moves') return;
-  let movesHTML = '';
-  for (const move of allPokemon[id].moves) {
-    movesHTML += moveTemplate(move);
-  }
-  contentRef.innerHTML = movesHTML;
 }

@@ -18,11 +18,11 @@ function typeTemplate(types) {
   `;
 }
 
-function overlayTemplate(id, name, types, mainType, imageUrl) {
+function overlayTemplate(id, name, types, mainType, imageUrl, pokemonId = id + 1) {
   return /*html*/ `
     <article class="overlay-card ${mainType}">
       <button onclick="toggleDialog()">Dialog schließen</button>
-      ${overlayHeaderTemplate(id, name, types)}
+      ${overlayHeaderTemplate(pokemonId, name, types)}
       ${overlayImageTemplate(name, imageUrl)}
       ${overlayButtonsTemplate(id)}
       <div id="overlay_content"></div>
@@ -30,10 +30,10 @@ function overlayTemplate(id, name, types, mainType, imageUrl) {
   `;
 }
 
-function overlayHeaderTemplate(id, name, types) {
+function overlayHeaderTemplate(pokemonId, name, types) {
   return /*html*/ `
     <div class="pokemon-card-header">
-      <h2>${formatName(name)}<span> #${id + 1}</span></h2>
+      <h2>${formatName(name)}<span> #${pokemonId}</span></h2>
       <div class="types">${types}</div>
     </div>
   `;
@@ -53,17 +53,16 @@ function overlayButtonsTemplate(id) {
       <button onclick="showOverlayAbout(${id})">Über das Pokémon</button>
       <button onclick="showOverlayStats(${id})">Basiswerte</button>
       <button onclick="showOverlayEvolutions(${id})">Evolutionen</button>
-      <button onclick="showOverlayMoves(${id})">Attacken</button>
     </div>
   `;
 }
 
 function evolutionTemplate(previousName, evolution) {
   return /*html*/ `
-    <div class="evolution-item">
+    <button type="button" class="evolution-item" onclick="openEvolution(${evolution.id})" aria-label="Details zu ${evolution.germanName} öffnen">
       <img src="${evolution.imageUrl}" alt="${evolution.germanName}" />
-      <p>${previousName}${evolution.germanName}</p>
-    </div>
+      <span>${previousName}${evolution.germanName}</span>
+    </button>
   `;
 }
 function statsTemplate(stat) {
@@ -78,11 +77,5 @@ function aboutTemplate(about) {
     <p>Größe: ${about.height} m</p>
     <p>Gewicht: ${about.weight} kg</p>
     <p>Geschlecht: ${getGenderText(about.genderRate)}</p>
-  `;
-}
-
-function moveTemplate(move) {
-  return /*html*/ `
-    <p>${move.germanName}</p>
   `;
 }
