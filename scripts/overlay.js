@@ -21,6 +21,14 @@ async function getOverlay(id) {
   await showOverlayAbout(id);
 }
 
+async function changeOverlay(id, direction) {
+  const index = currentPokemon.indexOf(allPokemon[id]);
+  if (index === -1) return;
+  const nextPokemon = currentPokemon[index + direction];
+  if (!nextPokemon) return;
+  await getOverlay(allPokemon.indexOf(nextPokemon));
+}
+
 async function showOverlayAbout(id) {
   const contentRef = getOverlayContent('about');
   contentRef.textContent = 'Informationen werden geladen…';
@@ -75,5 +83,8 @@ async function openEvolution(speciesId) {
 function getOverlayContent(tab) {
   const contentRef = document.getElementById('overlay_content');
   contentRef.dataset.tab = tab;
+  for (const button of document.querySelectorAll('.overlay-buttons button')) {
+    button.setAttribute('aria-pressed', button.dataset.tab === tab);
+  }
   return contentRef;
 }

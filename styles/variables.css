@@ -3,10 +3,18 @@
   --page-background: #e9eef5;
   --button-background: #293343;
   --button-background-hover: #3a4960;
+  --button-background-active: #151b24;
   --button-text: #f5f6f8;
+  --load-button-background: var(--type-electric-strong);
+  --load-button-background-hover: var(--type-electric);
+  --load-button-background-active: #d9b52c;
+  --load-button-text: var(--input-text);
   --input-background: #ffffff;
   --input-border: #cbd5e1;
   --input-text: #293343;
+  --type-text-color: #ffffff;
+  --overlay-navigation-background: rgb(255 255 255 / 65%);
+  --overlay-navigation-background-hover: rgb(255 255 255 / 90%);
 
   /* Helle Typ-Farben */
   --type-normal: #e8e6d9;
@@ -47,4 +55,9 @@
   --type-dark-strong: #72635c;
   --type-steel-strong: #727c8d;
   --type-fairy-strong: #b96390;
+
+  /* Scrollbar  */
+  --scrollbar-track: var(--page-background);
+  --scrollbar-thumb: var(--button-background);
+  --scrollbar-thumb-hover: var(--button-background-hover);
 }

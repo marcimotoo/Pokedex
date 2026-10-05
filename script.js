@@ -55,23 +55,36 @@ function matchesPokemon(pokemon, filterName) {
   return pokemonNumber === Number(filterName) || pokemon.name.includes(filterName) || pokemon.germanName?.includes(filterName) || matchesType;
 }
 
-// TODO: Überarbeiten – 18 Zeilen; auf höchstens 14 Zeilen pro Funktion aufteilen.
 async function loadMorePokemon() {
   const button = document.getElementById('more_pokemon');
   button.disabled = true;
   try {
-    const oldLimit = pokemonLimit;
-    pokemonLimit += 10;
-    if (pokemonLimit > allPokemon.length) {
-      pokemonLimit = allPokemon.length;
-    }
-    await loadAllData(oldLimit, pokemonLimit);
-    currentPokemon = allPokemon.slice(0, pokemonLimit);
+    await loadMore();
+  } catch (error) {
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function loadMore() {
+  const oldLimit = pokemonLimit;
+  pokemonLimit = Math.min(pokemonLimit + 40, allPokemon.length);
+  await loadAllData(oldLimit, pokemonLimit);
+  currentPokemon = allPokemon.slice(0, pokemonLimit);
+  await renderPokemon();
+}
+
+async function showAllPokemon() {
+  setLoadingScreen(true);
+  try {
+    await loadAllData(0, allPokemon.length);
+    pokemonLimit = allPokemon.length;
+    currentPokemon = allPokemon.slice();
     await renderPokemon();
   } catch (error) {
     console.error('Pokémon konnten nicht geladen werden: ', error);
   } finally {
-    button.disabled = false;
+    setLoadingScreen(false);
   }
 }
 
@@ -81,8 +94,8 @@ function setLoadingScreen(isVisible) {
 
 function getPokemonImage(pokemon) {
   return (
-    pokemon.sprites.other['official-artwork'].front_default ||
     pokemon.sprites.other.showdown.front_default ||
+    pokemon.sprites.other['official-artwork'].front_default ||
     pokemon.sprites.versions['generation-vii']['lets-go-pikachu-lets-go-eevee'].front_default ||
     pokemon.sprites.versions['generation-vii']['ultra-sun-ultra-moon'].front_default
   );

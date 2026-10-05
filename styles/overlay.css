@@ -48,26 +48,80 @@
   gap: 6px;
 }
 
+.overlay-card .type-text {
+  color: var(--type-text-color);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .overlay-close {
   position: absolute;
   top: 12px;
   right: 12px;
+}
+
+.overlay-close,
+.overlay-navigation button {
   width: 32px;
   height: 32px;
-  background: rgb(255 255 255 / 65%);
+  background: var(--load-button-background);
   border: none;
   border-radius: 50%;
+  color: var(--load-button-text);
   font-size: 24px;
 }
 
+/* Vorheriges und nächstes Pokémon */
+
+.overlay-navigation button {
+  position: absolute;
+  top: 50%;
+  height: 112px;
+  border: none;
+  border-radius: 10px;
+  color: var(--input-text);
+  font-weight: 600;
+  transform: translateY(-50%);
+}
+
+.overlay-navigation button:first-child {
+  left: 16px;
+}
+
+.overlay-navigation button:last-child {
+  right: 16px;
+}
+
+.overlay-close:hover,
+.overlay-navigation button:hover:not(:disabled),
+.overlay-buttons button:hover {
+  background: var(--load-button-background-hover);
+}
+
+.overlay-close:active,
+.overlay-navigation button:active:not(:disabled),
+.overlay-buttons button:active {
+  background: var(--load-button-background-active);
+  color: var(--load-button-text);
+}
+
+.overlay-navigation button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
 /* Bild */
+
+.overlay-image-region {
+  position: relative;
+}
 
 .overlay-image-container {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 400px;
-  padding: 16px;
+  padding: 16px 56px;
 }
 
 .overlay-image {
@@ -90,15 +144,17 @@
 .overlay-buttons button {
   flex: 1;
   padding: 10px;
-  background: #eef0f3;
+  background: var(--load-button-background);
   border: none;
+  border-bottom: 2px solid transparent;
   border-radius: 8px;
-  color: #252525;
+  color: var(--load-button-text);
   font: inherit;
+  font-weight: 600;
 }
 
-.overlay-buttons button:hover {
-  background: #dde1e7;
+.overlay-buttons button[aria-pressed='true'] {
+  border-bottom-color: var(--load-button-text);
 }
 
 /* Inhaltsbereich */

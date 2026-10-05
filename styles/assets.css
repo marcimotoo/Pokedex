@@ -1,18 +1,24 @@
-/* Mehr-Pokémon-Button */
+/* Pokémon-Ladebuttons */
 
-#more_pokemon {
+.load-pokemon-button {
   width: 200px;
   margin: 16px 0 32px;
   padding: 12px;
-  background: var(--button-background);
+  background: var(--load-button-background);
   border: none;
   border-radius: 12px;
-  color: var(--button-text);
+  color: var(--load-button-text);
   font: inherit;
+  font-weight: 600;
 }
 
-#more_pokemon:hover {
-  background: var(--button-background-hover);
+.load-pokemon-button:hover {
+  background: var(--load-button-background-hover);
+}
+
+.load-pokemon-button:active:not(:disabled) {
+  background: var(--load-button-background-active);
+  color: var(--load-button-text);
 }
 
 /* Tastatur-Fokus */
@@ -159,4 +165,36 @@ button:focus-visible {
 }
 .fairy-strong {
   background: var(--type-fairy-strong);
+}
+
+/* Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+@supports selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 2px solid var(--scrollbar-track);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
 }

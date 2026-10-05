@@ -8,7 +8,7 @@ let currentPokemon = [];
 const cache = new Map();
 
 let speciesCount = 0;
-let pokemonLimit = 125;
+let pokemonLimit = 40;
 
 async function fetchUrl(url) {
   if (cache.has(url)) {
