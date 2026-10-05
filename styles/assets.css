@@ -168,6 +168,7 @@ button:focus-visible {
 }
 
 /* Scrollbar */
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);

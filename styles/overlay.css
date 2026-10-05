@@ -60,10 +60,10 @@
 .overlay-navigation button {
   width: 32px;
   height: 32px;
-  background: var(--load-button-background);
+  background: #f5f6f8;
   border: none;
   border-radius: 50%;
-  color: var(--load-button-text);
+  color: var(--input-text);
   font-size: 24px;
 }
 
@@ -91,14 +91,14 @@
 .overlay-close:hover,
 .overlay-navigation button:hover:not(:disabled),
 .overlay-buttons button:hover {
-  background: var(--load-button-background-hover);
+  background: #e8ecf1;
 }
 
 .overlay-close:active,
 .overlay-navigation button:active:not(:disabled),
 .overlay-buttons button:active {
-  background: var(--load-button-background-active);
-  color: var(--load-button-text);
+  background: var(--button-background);
+  color: var(--button-text);
 }
 
 .overlay-navigation button:disabled {
@@ -140,17 +140,23 @@
 .overlay-buttons button {
   flex: 1;
   padding: 10px;
-  background: var(--load-button-background);
+  background: #f5f6f8;
   border: none;
   border-bottom: 2px solid transparent;
   border-radius: 8px;
-  color: var(--load-button-text);
+  color: var(--input-text);
   font: inherit;
   font-weight: 600;
 }
 
 .overlay-buttons button[aria-pressed='true'] {
-  border-bottom-color: var(--load-button-text);
+  background: var(--button-background);
+  border-bottom-color: var(--button-background);
+  color: var(--button-text);
+}
+
+.overlay-buttons button[aria-pressed='true']:hover {
+  background: var(--button-background-hover);
 }
 
 /* Inhaltsbereich */
