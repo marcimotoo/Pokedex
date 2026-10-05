@@ -19,10 +19,6 @@
   position: relative;
 }
 
-.no-scroll {
-  overflow: hidden;
-}
-
 .overlay-image-container,
 .overlay-buttons,
 #overlay_content {

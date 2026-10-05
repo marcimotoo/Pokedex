@@ -1,9 +1,8 @@
 // Cards Template
 
-// TODO: Überarbeiten – 15 Zeilen; auf höchstens 14 Zeilen pro Funktion aufteilen.
 function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
   return /*html*/ `
-  <button class="pokemon-card-button ${mainType}" onclick="toggleDialog(${JSON.id - 1})">
+  <button class="pokemon-card-button ${mainType}" onclick="toggleDialog(${JSON.id - 1}); document.body.style.overflow = 'hidden';">
     <article class="pokemon-card"> 
       <div class="pokemon-card-header">
         <h2>${formatName(names)}<span> #${JSON.id}</span></h2>
@@ -25,50 +24,31 @@ function typeTemplate(types) {
 
 // Overlay Template
 
-// TODO: Überarbeiten – 18 Zeilen; auf höchstens 14 Zeilen pro Funktion aufteilen.
 function overlayTemplate(id, name, types, mainType, imageUrl, pokemonId = id + 1) {
   const index = currentPokemon.indexOf(allPokemon[id]);
   return /*html*/ `
-    <article class="overlay-card no-scroll ${mainType}">
+    <article class="overlay-card ${mainType}">
       <button class="overlay-close" aria-label="Dialog schließen" onclick="toggleDialog()">&times;</button>
-      ${overlayHeaderTemplate(pokemonId, name, types)}
+      <div class="pokemon-card-header">
+        <h2>${formatName(name)}<span> #${pokemonId}</span></h2>
+        <div class="types">${types}</div>
+      </div>
       <div class="overlay-image-region">
-        ${overlayImageTemplate(name, imageUrl)}
+        <div class="overlay-image-container">
+          <img class="overlay-image" src="${imageUrl}" alt="${name}" />
+        </div>
         <div class="overlay-navigation">
           <button onclick="changeOverlay(${id}, -1)" ${index <= 0 ? 'disabled' : ''} aria-label="Vorheriges Pokémon">&lt;</button>
           <button onclick="changeOverlay(${id}, 1)" ${index < 0 || index >= currentPokemon.length - 1 ? 'disabled' : ''} aria-label="Nächstes Pokémon">&gt;</button>
         </div>
       </div>
-      ${overlayButtonsTemplate(id)}
+      <div class="overlay-buttons">
+        <button data-tab="about" aria-pressed="false" onclick="showOverlayAbout(${id})">Über das Pokémon</button>
+        <button data-tab="stats" aria-pressed="false" onclick="showOverlayStats(${id})">Basiswerte</button>
+        <button data-tab="evolutions" aria-pressed="false" onclick="showOverlayEvolutions(${id})">Evolutionen</button>
+      </div>
       <div id="overlay_content"></div>
     </article>
-  `;
-}
-
-function overlayHeaderTemplate(pokemonId, name, types) {
-  return /*html*/ `
-    <div class="pokemon-card-header">
-      <h2>${formatName(name)}<span> #${pokemonId}</span></h2>
-      <div class="types">${types}</div>
-    </div>
-  `;
-}
-
-function overlayImageTemplate(name, imageUrl) {
-  return /*html*/ `
-    <div class="overlay-image-container">
-      <img class="overlay-image" src="${imageUrl}" alt="${name}" />
-    </div>
-  `;
-}
-
-function overlayButtonsTemplate(id) {
-  return /*html*/ `
-    <div class="overlay-buttons">
-      <button data-tab="about" aria-pressed="false" onclick="showOverlayAbout(${id})">Über das Pokémon</button>
-      <button data-tab="stats" aria-pressed="false" onclick="showOverlayStats(${id})">Basiswerte</button>
-      <button data-tab="evolutions" aria-pressed="false" onclick="showOverlayEvolutions(${id})">Evolutionen</button>
-    </div>
   `;
 }
 

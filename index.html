@@ -51,9 +51,11 @@
         </div>
       </div>
 
-      <section id="pokemon_card_content"></section>
+      <section id="pokemon_card_content">
+        <ul id="pokemon_card_content"></ul>
+      </section>
       <button class="load-pokemon-button" id="more_pokemon" onclick="loadMorePokemon()">mehr Pokemon!</button>
-      <dialog closedby="any" class="overlay_dialog" id="overlay_dialog"></dialog>
+      <dialog closedby="any" class="overlay_dialog" id="overlay_dialog" onclose="document.body.style.overflow = ''"></dialog>
     </main>
     <footer>
       <p>Pokédex <span aria-hidden="true">·</span> Daten von <a href="https://pokeapi.co/">PokéAPI</a></p>
