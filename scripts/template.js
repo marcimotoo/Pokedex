@@ -1,3 +1,6 @@
+// Cards Template
+
+// TODO: Überarbeiten – 15 Zeilen; auf höchstens 14 Zeilen pro Funktion aufteilen.
 function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
   return /*html*/ `
   <button class="pokemon-card-button ${mainType}" onclick="toggleDialog(${JSON.id - 1})">
@@ -20,9 +23,11 @@ function typeTemplate(types) {
   `;
 }
 
+// Overlay Template
+
 function overlayTemplate(id, name, types, mainType, imageUrl, pokemonId = id + 1) {
   return /*html*/ `
-    <article class="overlay-card ${mainType}">
+    <article class="overlay-card no-scroll ${mainType}">
       <button class="overlay-close" aria-label="Dialog schließen" onclick="toggleDialog()">&times;</button>
       ${overlayHeaderTemplate(pokemonId, name, types)}
       ${overlayImageTemplate(name, imageUrl)}
@@ -59,14 +64,15 @@ function overlayButtonsTemplate(id) {
   `;
 }
 
-function evolutionTemplate(previousName, evolution) {
+function aboutTemplate(about) {
   return /*html*/ `
-    <button type="button" class="evolution-item" onclick="openEvolution(${evolution.id})" aria-label="Details zu ${evolution.germanName} öffnen">
-      <img src="${evolution.imageUrl}" alt="${evolution.germanName}" />
-      <span>${previousName}<strong>${evolution.germanName}</strong></span>
-    </button>
+    <p><strong>Beschreibung</strong><br />${about.description}</p>
+    <p><strong>Größe:</strong> ${about.height} m</p>
+    <p><strong>Gewicht:</strong> ${about.weight} kg</p>
+    <p><strong>Geschlecht:</strong> ${getGenderText(about.genderRate)}</p>
   `;
 }
+
 function statsTemplate(stat) {
   return /*html*/ `
     <p>
@@ -78,11 +84,11 @@ function statsTemplate(stat) {
   `;
 }
 
-function aboutTemplate(about) {
+function evolutionTemplate(previousName, evolution) {
   return /*html*/ `
-    <p><strong>Beschreibung</strong><br />${about.description}</p>
-    <p><strong>Größe:</strong> ${about.height} m</p>
-    <p><strong>Gewicht:</strong> ${about.weight} kg</p>
-    <p><strong>Geschlecht:</strong> ${getGenderText(about.genderRate)}</p>
+    <button type="button" class="evolution-item" onclick="openEvolution(${evolution.id})" aria-label="Details zu ${evolution.germanName} öffnen">
+      <img src="${evolution.imageUrl}" alt="${evolution.germanName}" />
+      <span>${previousName}<strong>${evolution.germanName}</strong></span>
+    </button>
   `;
 }

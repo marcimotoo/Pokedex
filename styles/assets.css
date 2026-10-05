@@ -1,3 +1,54 @@
+/* Mehr-Pokémon-Button */
+
+#more_pokemon {
+  width: 200px;
+  margin: 16px 0 32px;
+  padding: 12px;
+  background: var(--button-background);
+  border: none;
+  border-radius: 12px;
+  color: var(--button-text);
+  font: inherit;
+}
+
+#more_pokemon:hover {
+  background: var(--button-background-hover);
+}
+
+/* Tastatur-Fokus */
+
+button:focus-visible {
+  outline: 3px solid rgb(91, 255, 162);
+  outline-offset: 0px;
+}
+
+/* Suche */
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 280px;
+  max-width: 100%;
+  margin: 24px 0 8px;
+  padding: 12px;
+  background: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  color: var(--input-text);
+}
+
+#filter_input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+/* Helle Typ-Farben */
+
 .normal {
   background: var(--type-normal);
 }
@@ -52,6 +103,9 @@
 .fairy {
   background: var(--type-fairy);
 }
+
+/* Kräftige Typ-Farben */
+
 .normal-strong {
   background: var(--type-normal-strong);
 }
@@ -105,9 +159,4 @@
 }
 .fairy-strong {
   background: var(--type-fairy-strong);
-}
-
-button:focus-visible {
-  outline: 3px solid rgb(0, 0, 0);
-  outline-offset: 0px;
 }

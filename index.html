@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="./styles/variables.css" />
     <link rel="stylesheet" href="./styles/assets.css" />
     <link rel="stylesheet" href="./styles/loading.css" />
+    <link rel="stylesheet" href="./styles/overlay.css" />
     <link rel="stylesheet" href="style.css" />
-    <script src="./scripts/db.js"></script>
+    <script src="./scripts/api.js"></script>
     <script src="./scripts/template.js"></script>
+    <script src="./scripts/overlay.js"></script>
     <script src="script.js"></script>
   </head>
   <body onload="init()">
@@ -32,7 +34,7 @@
           <circle cx="10" cy="10" r="6" />
           <path d="M15 15L21 21" />
         </svg>
-        <input oninput="filterAndShowPokemon()" id="filter_input" type="text" aria-label="Pokémon suchen" />
+        <input oninput="filterAndShowPokemon()" id="filter_input" type="text" placeholder="Name, Typ, Pokédex-Nr." aria-label="Pokémon suchen" />
       </div>
       <div id="loading-screen">
         <div class="loading-card" role="status" aria-live="polite">

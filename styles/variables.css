@@ -1,4 +1,14 @@
 :root {
+  /* Oberfläche */
+  --page-background: #e9eef5;
+  --button-background: #293343;
+  --button-background-hover: #3a4960;
+  --button-text: #f5f6f8;
+  --input-background: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #293343;
+
+  /* Helle Typ-Farben */
   --type-normal: #e8e6d9;
   --type-fire: #ffdac5;
   --type-water: #cce8fa;
@@ -18,7 +28,7 @@
   --type-steel: #e0e3ed;
   --type-fairy: #f5d8e8;
 
-  /* strong */
+  /* Kräftige Typ-Farben */
   --type-normal-strong: #7f7f66;
   --type-fire-strong: #c76338;
   --type-water-strong: #457fc0;
