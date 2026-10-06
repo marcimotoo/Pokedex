@@ -31,13 +31,11 @@ async function loadPokemonList() {
   allPokemon = pokemonList.results;
 }
 
-async function loadAllData(start, end) {
+async function loadTypeNameData(start, end) {
   for (let i = start; i < end; i++) {
     await loadTypeData(i);
     await loadNameData(i);
-    await loadStatsData(i);
-    await loadEvolutionData(i);
-    allPokemon[i].dataLoaded = true;
+    console.log(allPokemon[i]);
   }
 }
 
@@ -98,7 +96,6 @@ async function loadEvolutionStage(id, entry) {
 
 async function loadEvolutionImages(id) {
   for (const evolution of allPokemon[id].evolution) {
-    if (evolution.imageUrl) continue;
     const speciesData = await fetchUrl(pokemonSpeciesApiUrl + evolution.id + '/');
     const variety = speciesData.varieties.find((entry) => entry.is_default);
     const pokemonData = await fetchUrl(variety.pokemon.url);

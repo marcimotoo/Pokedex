@@ -2,8 +2,9 @@
 
 function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
   return /*html*/ `
-  <button class="pokemon-card-button ${mainType}" onclick="toggleDialog(${JSON.id - 1}); document.body.style.overflow = 'hidden';">
-    <article class="pokemon-card"> 
+  <li>
+  <button class="pokemon-card-button ${mainType}" aria-label="Details zu ${formatName(names)} öffnen" onclick="toggleDialog(${JSON.id - 1}); document.body.style.overflow = 'hidden';">
+    <div class="pokemon-card"> 
       <div class="pokemon-card-header">
         <h2>${formatName(names)}<span> #${JSON.id}</span></h2>
       </div>
@@ -11,8 +12,9 @@ function pokemonCardsTemplate(JSON, names, types, mainType, imageUrl) {
       <div class="types">
         ${types}
       </div>
-    </article>
+    </div>
   </button>
+  </li>
           `;
 }
 
@@ -43,9 +45,9 @@ function overlayTemplate(id, name, types, mainType, imageUrl, pokemonId = id + 1
         </div>
       </div>
       <div class="overlay-buttons">
-        <button data-tab="about" aria-pressed="false" onclick="showOverlayAbout(${id})">Über das Pokémon</button>
-        <button data-tab="stats" aria-pressed="false" onclick="showOverlayStats(${id})">Basiswerte</button>
-        <button data-tab="evolutions" aria-pressed="false" onclick="showOverlayEvolutions(${id})">Evolutionen</button>
+        <button data-tab="about" aria-pressed="false" aria-label="Informationen zum Pokémon anzeigen" onclick="showOverlayAbout(${id})">Über das Pokémon</button>
+        <button data-tab="stats" aria-pressed="false" aria-label="Basiswerte des Pokémon anzeigen" onclick="showOverlayStats(${id})">Basiswerte</button>
+        <button data-tab="evolutions" aria-pressed="false" aria-label="Evolutionen des Pokémon anzeigen" onclick="showOverlayEvolutions(${id})">Evolutionen</button>
       </div>
       <div id="overlay_content"></div>
     </article>

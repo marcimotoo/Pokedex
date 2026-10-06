@@ -43,8 +43,9 @@ function getGenderText(rate) {
   return `${female} % weiblich, ${100 - female} % männlich`;
 }
 
-function showOverlayStats(id) {
+async function showOverlayStats(id) {
   const contentRef = getOverlayContent('stats');
+  await loadStatsData(id);
   let statsHTML = '';
   for (const stat of allPokemon[id].stats) {
     statsHTML += statsTemplate(stat);
@@ -55,8 +56,8 @@ function showOverlayStats(id) {
 async function showOverlayEvolutions(id) {
   const contentRef = getOverlayContent('evolutions');
   contentRef.textContent = 'Entwicklungen werden geladen…';
+  await loadEvolutionData(id);
   await loadEvolutionImages(id);
-  if (!contentRef.isConnected || contentRef.dataset.tab !== 'evolutions') return;
   const evolutions = allPokemon[id].evolution;
   let evolutionHTML = '';
   for (const evolution of evolutions) {
@@ -64,7 +65,7 @@ async function showOverlayEvolutions(id) {
     const previousName = previous ? `${previous.germanName} → ` : '';
     evolutionHTML += evolutionTemplate(previousName, evolution);
   }
-  contentRef.innerHTML = evolutionHTML;
+  contentRef.innerHTML = evolutionHTML || 'Keine Entwicklungsdaten vorhanden.';
 }
 
 async function openEvolution(speciesId) {
@@ -73,10 +74,7 @@ async function openEvolution(speciesId) {
   const speciesData = await fetchUrl(pokemonSpeciesApiUrl + speciesId + '/');
   const variety = speciesData.varieties.find((entry) => entry.is_default);
   const id = getPokemonIndex(variety.pokemon);
-  if (!allPokemon[id].dataLoaded) {
-    await loadAllData(id, id + 1);
-  }
-  if (!contentRef.isConnected || contentRef.dataset.tab !== 'evolution-details') return;
+  await loadTypeNameData(id, id + 1);
   await getOverlay(id);
 }
 

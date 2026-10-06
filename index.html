@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pokedex</title>
+    <title>Pokédex</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles/reset.css" />
     <link rel="stylesheet" href="./styles/fonts.css " />
@@ -35,7 +35,7 @@
           </svg>
           <input oninput="filterAndShowPokemon()" id="filter_input" type="text" placeholder="Name, Typ, Pokédex-Nr." aria-label="Pokémon suchen" />
         </div>
-        <button class="load-pokemon-button" onclick="showAllPokemon()">Zeig mir ALLE!</button>
+        <button class="load-pokemon-button" onclick="showAllPokemon()" aria-label="Alle Pokémon laden und anzeigen">Zeig mir ALLE!</button>
       </div>
     </header>
     <main>
@@ -51,11 +51,11 @@
         </div>
       </div>
 
-      <section id="pokemon_card_content">
+      <section>
         <ul id="pokemon_card_content"></ul>
       </section>
-      <button class="load-pokemon-button" id="more_pokemon" onclick="loadMorePokemon()">mehr Pokemon!</button>
-      <dialog closedby="any" class="overlay_dialog" id="overlay_dialog" onclose="document.body.style.overflow = ''"></dialog>
+      <button class="load-pokemon-button" id="more_pokemon" onclick="loadMorePokemon()" aria-label="Weitere Pokémon laden und anzeigen">mehr Pokemon!</button>
+      <dialog closedby="any" class="overlay_dialog" id="overlay_dialog" aria-label="Pokémon-Details" onclose="document.body.style.overflow = ''"></dialog>
     </main>
     <footer>
       <p>Pokédex <span aria-hidden="true">·</span> Daten von <a href="https://pokeapi.co/">PokéAPI</a></p>

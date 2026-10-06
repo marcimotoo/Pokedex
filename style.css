@@ -5,6 +5,7 @@ body {
 }
 
 main {
+  margin-top: 16px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -15,6 +16,8 @@ main {
 /* Header */
 
 header {
+  position: sticky;
+  top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -81,6 +84,7 @@ header h1 {
 /* Pokémon-Karten */
 
 #pokemon_card_content {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

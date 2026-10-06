@@ -2,30 +2,29 @@ async function init() {
   setLoadingScreen(true);
   await loadPokemonList();
 
-  await loadAllData(0, pokemonLimit);
+  await loadTypeNameData(0, pokemonLimit);
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
   setLoadingScreen(false);
-
-  loadAllData(pokemonLimit, allPokemon.length);
 }
 
-// TODO: Überarbeiten – 17 Zeilen; auf höchstens 14 Zeilen pro Funktion aufteilen.
 async function renderPokemon() {
   const pokemonCardsRef = document.getElementById('pokemon_card_content');
   setLoadingScreen(true);
   let cardsHTML = '';
-
   for (let i = 0; i < currentPokemon.length; i++) {
     const pokemonAsJson = await fetchUrl(currentPokemon[i].url);
     const names = currentPokemon[i].germanName;
     const types = await getTypesHTML(currentPokemon[i]);
     const mainType = currentPokemon[i].types[0].name;
     const imageUrl = getPokemonImage(pokemonAsJson);
-
     cardsHTML += pokemonCardsTemplate(pokemonAsJson, names, types, mainType, imageUrl);
   }
-  pokemonCardsRef.innerHTML = cardsHTML;
+  if (currentPokemon.length > 0) {
+    pokemonCardsRef.innerHTML = cardsHTML;
+  } else {
+    pokemonCardsRef.innerHTML = '<li>Keine Pokémon gefunden.</li>';
+  }
   setLoadingScreen(false);
 }
 
@@ -39,14 +38,14 @@ async function getTypesHTML(JSON) {
 
 async function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-  currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => matchesPokemon(pokemon, filterName));
-  for (const pokemon of currentPokemon) {
-    if (!pokemon.dataLoaded) {
+  if (filterName.length >= 3 || filterName === '') {
+    currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => matchesPokemon(pokemon, filterName));
+    for (const pokemon of currentPokemon) {
       const id = allPokemon.indexOf(pokemon);
-      await loadAllData(id, id + 1);
+      await loadTypeNameData(id, id + 1);
     }
+    await renderPokemon();
   }
-  await renderPokemon();
 }
 
 function matchesPokemon(pokemon, filterName) {
@@ -57,35 +56,28 @@ function matchesPokemon(pokemon, filterName) {
 
 async function loadMorePokemon() {
   const button = document.getElementById('more_pokemon');
+  setLoadingScreen(true);
   button.disabled = true;
-  try {
-    await loadMore();
-  } catch (error) {
-  } finally {
-    button.disabled = false;
-  }
+  await loadMore();
+  button.disabled = false;
+  setLoadingScreen(false);
 }
 
 async function loadMore() {
   const oldLimit = pokemonLimit;
   pokemonLimit = Math.min(pokemonLimit + 40, allPokemon.length);
-  await loadAllData(oldLimit, pokemonLimit);
+  await loadTypeNameData(oldLimit, pokemonLimit);
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
 }
 
 async function showAllPokemon() {
   setLoadingScreen(true);
-  try {
-    await loadAllData(0, allPokemon.length);
-    pokemonLimit = allPokemon.length;
-    currentPokemon = allPokemon.slice();
-    await renderPokemon();
-  } catch (error) {
-    console.error('Pokémon konnten nicht geladen werden: ', error);
-  } finally {
-    setLoadingScreen(false);
-  }
+  await loadTypeNameData(0, allPokemon.length);
+  pokemonLimit = allPokemon.length;
+  currentPokemon = allPokemon.slice();
+  await renderPokemon();
+  setLoadingScreen(false);
 }
 
 function setLoadingScreen(isVisible) {
