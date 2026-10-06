@@ -6,6 +6,7 @@ async function init() {
   currentPokemon = allPokemon.slice(0, pokemonLimit);
   await renderPokemon();
   setLoadingScreen(false);
+  loadTypeNameData(pokemonLimit, allPokemon.length);
 }
 
 async function renderPokemon() {
@@ -38,7 +39,7 @@ async function getTypesHTML(JSON) {
 
 async function filterAndShowPokemon() {
   const filterName = document.getElementById('filter_input').value.trim().toLowerCase().replaceAll(' ', '-');
-  if (filterName.length >= 3 || filterName === '') {
+  if (filterName.length >= 3 || filterName === '' || Number(filterName)) {
     currentPokemon = filterName === '' ? allPokemon.slice(0, pokemonLimit) : allPokemon.filter((pokemon) => matchesPokemon(pokemon, filterName));
     for (const pokemon of currentPokemon) {
       const id = allPokemon.indexOf(pokemon);

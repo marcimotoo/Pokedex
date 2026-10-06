@@ -1,0 +1,12 @@
+# Betriebssystem
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Lokale Zugangsdaten
+.env
+.env.*
+!.env.example
+
+# Abhängigkeiten
+node_modules/
