@@ -35,20 +35,20 @@ async function loadTypeNameData(start, end) {
   for (let i = start; i < end; i++) {
     await loadTypeData(i);
     await loadNameData(i);
-    console.log(allPokemon[i]);
   }
 }
 
 async function loadTypeData(id) {
   const pokemonData = await fetchUrl(allPokemon[id].url);
-  allPokemon[id].types = [];
+  const types = [];
 
   for (const entry of pokemonData.types) {
     const typeData = await fetchUrl(entry.type.url);
     const germanName = typeData.names.find((entry) => entry.language.name === 'de');
 
-    allPokemon[id].types.push({ name: entry.type.name, germanName: germanName?.name ?? entry.type.name });
+    types.push({ name: entry.type.name, germanName: germanName?.name ?? entry.type.name });
   }
+  allPokemon[id].types = types;
 }
 
 async function loadNameData(id) {
